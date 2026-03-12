@@ -40,7 +40,7 @@ export default function Footer() {
         <hr className="border-light" />
 
         <div className="text-center text-light-50 small">
-          © {new Date().getFullYear()} <strong>MyShop</strong>. All rights reserved.
+          © {new Date().getFullYear()} <strong>NTHealthcare</strong>. All rights reserved.
         </div>
       </div>
     </footer>
