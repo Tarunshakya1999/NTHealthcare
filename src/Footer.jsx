@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="row">
 
           <div className="col-md-4 mb-4">
-            <h5 className="fw-bold logo-glow">🛍️ MyShop</h5>
+            <h5 className="fw-bold logo-glow">🛍️ NTHealthcare</h5>
             <p className="text-light-50">
               Your one-stop shop for quality products. <br />
               Fast delivery, fair prices, and friendly service.
