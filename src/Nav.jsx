@@ -83,36 +83,25 @@ export default function Nav({ searchTerm, setSearchTerm }) {
           </ul>
 
           {/* Right Side */}
-          <ul className="navbar-nav ms-auto align-items-lg-center gap-3 w-100 w-lg-auto">
+          <ul className="navbar-nav ms-auto align-items-lg-center gap-3">
 
-            {/* 🔍 Search - FIXED RESPONSIVE VERSION */}
-            <li className="nav-item w-100 w-lg-auto">
+            {/* 🔍 Search */}
+            <li className="nav-item">
               <form
-                className="d-flex w-100"
+                className="d-flex"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <div className="input-group shadow-sm rounded-pill overflow-hidden" 
-                     style={{ width: '100%' }}>
+                <div className="input-group shadow-sm rounded-pill overflow-hidden">
                   <input
                     className="form-control border-0"
                     type="search"
                     placeholder="Search services..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ 
-                      minWidth: "120px",
-                      fontSize: "14px"
-                    }}
+                    style={{ minWidth: "220px" }}
                   />
-                  <button 
-                    className="btn btn-info text-white"
-                    style={{
-                      padding: "0.375rem 1rem",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                    <i className="fas fa-search d-lg-none"></i> {/* Mobile pe sirf icon */}
-                    <span className="d-none d-lg-inline">Search</span> {/* Desktop pe text */}
+                  <button className="btn btn-info text-white px-3">
+                    <i className="fas fa-search"></i>
                   </button>
                 </div>
               </form>
@@ -126,8 +115,7 @@ export default function Nav({ searchTerm, setSearchTerm }) {
                   data-bs-toggle="dropdown"
                 >
                   <i className="fas fa-user-circle me-2"></i>
-                  <span className="d-none d-md-inline">{username}</span>
-                  <span className="d-md-none">Profile</span>
+                  {username}
                 </button>
 
                 <ul className="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
@@ -166,30 +154,6 @@ export default function Nav({ searchTerm, setSearchTerm }) {
           </ul>
         </div>
       </div>
-
-      {/* Add this style tag for better responsiveness */}
-      <style jsx>{`
-        @media (max-width: 991px) {
-          .navbar-nav {
-            width: 100%;
-          }
-          .input-group {
-            width: 100% !important;
-            max-width: 100%;
-          }
-          .nav-item.w-100 {
-            margin-bottom: 10px;
-          }
-        }
-        @media (max-width: 576px) {
-          .input-group input {
-            font-size: 13px !important;
-          }
-          .navbar-brand {
-            font-size: 1.2rem !important;
-          }
-        }
-      `}</style>
     </nav>
   );
 }
