@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function Nav({ searchTerm, setSearchTerm }) {
   const navigate = useNavigate();
@@ -18,15 +18,15 @@ export default function Nav({ searchTerm, setSearchTerm }) {
     <nav
       className="navbar navbar-expand-lg sticky-top shadow-lg"
       style={{
-        background: "linear-gradient(90deg, #0f2027, #203a43, #2c5364)",
+        background: "linear-gradient(90deg,#0f2027,#203a43,#2c5364)",
         backdropFilter: "blur(10px)",
       }}
     >
-      <div className="container">
+      <div className="container-fluid px-3 px-lg-4">
 
-        {/* 🔥 Brand */}
+        {/* Brand */}
         <Link
-          className="navbar-brand fw-bold fs-3 text-white me-4"
+          className="navbar-brand fw-bold fs-4 text-white"
           to="/"
           style={{ letterSpacing: "1px" }}
         >
@@ -35,6 +35,7 @@ export default function Nav({ searchTerm, setSearchTerm }) {
           <span className="text-info">Healthcare</span>
         </Link>
 
+        {/* Mobile Toggle */}
         <button
           className="navbar-toggler bg-light"
           type="button"
@@ -44,10 +45,10 @@ export default function Nav({ searchTerm, setSearchTerm }) {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div className="collapse navbar-collapse mt-3 mt-lg-0" id="navbarNav">
 
           {/* Nav Links */}
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-2">
+          <ul className="navbar-nav me-auto mb-3 mb-lg-0 text-center text-lg-start">
 
             {[
               { to: "/", icon: "fa-home", label: "Home" },
@@ -60,9 +61,6 @@ export default function Nav({ searchTerm, setSearchTerm }) {
                 <Link
                   className="nav-link text-light px-3 fw-semibold"
                   to={item.to}
-                  style={{
-                    transition: "0.3s",
-                  }}
                 >
                   <i className={`fas ${item.icon} me-1`}></i>
                   {item.label}
@@ -83,22 +81,21 @@ export default function Nav({ searchTerm, setSearchTerm }) {
           </ul>
 
           {/* Right Side */}
-          <ul className="navbar-nav ms-auto align-items-lg-center gap-3">
+          <ul className="navbar-nav ms-lg-auto align-items-center gap-3">
 
-            {/* 🔍 Search */}
-            <li className="nav-item">
+            {/* Search */}
+            <li className="nav-item w-100 w-lg-auto">
               <form
-                className="d-flex"
+                className="d-flex w-100"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <div className="input-group shadow-sm rounded-pill overflow-hidden">
+                <div className="input-group shadow-sm rounded-pill overflow-hidden w-100">
                   <input
                     className="form-control border-0"
                     type="search"
                     placeholder="Search services..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ minWidth: "220px" }}
                   />
                   <button className="btn btn-info text-white px-3">
                     <i className="fas fa-search"></i>
@@ -107,7 +104,7 @@ export default function Nav({ searchTerm, setSearchTerm }) {
               </form>
             </li>
 
-            {/* 👤 User Dropdown */}
+            {/* User Dropdown */}
             {username && (
               <li className="nav-item dropdown">
                 <button
@@ -136,7 +133,9 @@ export default function Nav({ searchTerm, setSearchTerm }) {
                     </li>
                   )}
 
-                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
 
                   <li>
                     <button
@@ -147,11 +146,12 @@ export default function Nav({ searchTerm, setSearchTerm }) {
                       Logout
                     </button>
                   </li>
+
                 </ul>
               </li>
             )}
-
           </ul>
+
         </div>
       </div>
     </nav>
