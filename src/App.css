@@ -1,0 +1,30 @@
+.product-card {
+  border-radius: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+  height: 230px;
+  object-fit: contain;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gradient-btn {
+  background: linear-gradient(to right, #4e54c8, #8f94fb);
+  color: white;
+  border: none;
+  transition: 0.3s;
+}
+
+.gradient-btn:hover {
+  background: linear-gradient(to right, #8f94fb, #4e54c8);
+  transform: translateY(-2px);
+}

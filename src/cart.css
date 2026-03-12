@@ -1,0 +1,33 @@
+.card:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease;
+  }
+  
+  .btn-group .btn {
+    min-width: 40px;
+  }
+  
+  .card-title {
+    font-weight: 600;
+  }
+  
+  .bg-light {
+    background: #f9f9f9 !important;
+  }
+  .card:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease;
+  }
+  
+  .btn-group .btn {
+    min-width: 40px;
+  }
+  
+  .card-title {
+    font-weight: 600;
+  }
+  
+  .bg-light {
+    background: #f9f9f9 !important;
+  }
+    
