@@ -11,6 +11,12 @@ import UpdateProducts from "./UpdateProducts";
 import ProductDetail from "./ProductDetail";
 import CartPage from "./CartPage";
 import PaymentQR from "./Payment";
+import CookiePolicy from "./CookiePolicy";
+import Disclaimer from "./Disclaimer";
+import Disclosure from "./Disclousure";
+import PrivacyPolicy from "./PrivacyPolicy";
+import RefundPolicy from "./RefundPolicy";
+import TermsConditions from "./TermsConditions";
 
 
 function App() {
@@ -31,6 +37,13 @@ function App() {
         <Route path="/update/:id" element={<UpdateProducts />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/payment" element={<PaymentQR />} />
+        
+        <Route path="/cookiepolicy" element={<CookiePolicy />} />
+        <Route path="/disclaimer" element={<Disclaimer />} />
+        <Route path="/disclousure" element={<Disclosure />} />
+        <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+        <Route path="/refundpolicy" element={<RefundPolicy />} />
+        <Route path="/termsandconditions" element={<TermsConditions />} />
        
 
 

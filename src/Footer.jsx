@@ -19,10 +19,12 @@ export default function Footer() {
           <div className="col-md-4 mb-4">
             <h6 className="fw-bold text-glow">Quick Links</h6>
             <ul className="list-unstyled">
-              <li><Link to="/" className="footer-link">🏠 Home</Link></li>
-              <li><Link to="/about" className="footer-link">ℹ️ About</Link></li>
-              <li><Link to="/services" className="footer-link">🛠️ Services</Link></li>
-              <li><Link to="/contact" className="footer-link">📞 Contact</Link></li>
+              <li><Link to="/privacypolicy" className="footer-link">Privacy Policy</Link></li>
+              <li><Link to="/termsandconditions" className="footer-link">Terms&Condiotions</Link></li>
+              <li><Link to="/cookiepolicy" className="footer-link">Cookie Policy</Link></li>
+              <li><Link to="/disclaimer" className="footer-link">Disclaimer</Link></li>
+              <li><Link to="/disclousure" className="footer-link">Disclousure</Link></li>
+              <li><Link to="/refundpolicy" className="footer-link">Refund Policy</Link></li>
             </ul>
           </div>
 
