@@ -55,7 +55,7 @@ export default function Nav({ searchTerm, setSearchTerm }) {
               { to: "/about", icon: "fa-info-circle", label: "About" },
               { to: "/services", icon: "fa-stethoscope", label: "Services" },
               { to: "/contact", icon: "fa-phone-alt", label: "Contact" },
-              { to: "/weather", icon: "fa-cloud-sun", label: "Weather" },
+              // { to: "/weather", icon: "fa-cloud-sun", label: "Weather" },
             ].map((item, index) => (
               <li className="nav-item" key={index}>
                 <Link
