@@ -17,7 +17,7 @@ export default function UpdateProducts() {
 
   const getData = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/products/${id}/`);
+      const res = await axios.get(`https://nthealthcarebackend.onrender.com/api/products/${id}/`);
       const product = res.data;
       setName(product.name);
       setPrice(product.price);
@@ -51,7 +51,7 @@ export default function UpdateProducts() {
     }
 
     try {
-      await axios.patch(`http://localhost:8000/api/products/${id}/`, formData, {
+      await axios.patch(`https://nthealthcarebackend.onrender.com/api/products/${id}/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -21,7 +21,7 @@ export default function ProductForm() {
     formData.append("image", image);
 
     axios
-      .post("http://localhost:8000/api/products/", formData, {
+      .post("https://nthealthcarebackend.onrender.com/api/products/", formData, {
         headers: {
           "Content-Type": "multipart/form-data", // Ye Optional h ye bs brwoser ko baatat h ki data ka type kya hai multiple types of data jisme text or image dono h form ka data
         },

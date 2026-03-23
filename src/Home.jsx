@@ -51,7 +51,7 @@ export default function Home() {
 
   const getData = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/products/");
+      const response = await axios.get("https://nthealthcarebackend.onrender.com/api/products/");
       setData(response.data);
     } catch (err) {
       console.error("Failed to fetch data:", err);
@@ -66,7 +66,7 @@ export default function Home() {
 
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/api/products/${id}/`);
+      await axios.delete(`https://nthealthcarebackend.onrender.com/api/products/${id}/`);
       setMsg("Product deleted successfully!");
       setData(data.filter((product) => product.id !== id));
       setTimeout(() => {

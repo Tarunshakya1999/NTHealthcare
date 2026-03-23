@@ -23,7 +23,7 @@ export default function Contact() {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/contact/",
+        "https://nthealthcarebackend.onrender.com/api/contact/",
         formData
       );
 

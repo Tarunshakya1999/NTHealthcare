@@ -82,7 +82,7 @@ const Registeration = () => {
     const completePhoneNumber = `${countryCode}${phone}`;
 
     try {
-      const response = await axios.post("http://localhost:8000/api/register/", {
+      const response = await axios.post("https://nthealthcarebackend.onrender.com/api/register/", {
         username: username,
         email: email,
         phone: completePhoneNumber, // Complete phone number with country code

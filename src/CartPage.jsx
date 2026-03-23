@@ -399,7 +399,7 @@ export default function CartPage() {
   const fetchCart = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:8000/api/cart/", {
+      const res = await axios.get("https://nthealthcarebackend.onrender.com/api/cart/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCart(res.data);
@@ -416,7 +416,7 @@ export default function CartPage() {
     setUpdatingItemId(itemId);
     try {
       await axios.patch(
-        `http://localhost:8000/api/cart/update/${itemId}/`,
+        `https://nthealthcarebackend.onrender.com/api/cart/update/${itemId}/`,
         { action },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -431,7 +431,7 @@ export default function CartPage() {
   const removeItem = async (itemId) => {
     setUpdatingItemId(itemId);
     try {
-      await axios.delete(`http://localhost:8000/api/cart/${itemId}/`, {
+      await axios.delete(`https://nthealthcarebackend.onrender.com/api/cart/${itemId}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchCart();
@@ -446,7 +446,7 @@ export default function CartPage() {
     setLoading(true);
     try {
       for (let item of cart) {
-        await axios.delete(`http://localhost:8000/api/cart/${item.id}/`, {
+        await axios.delete(`https://nthealthcarebackend.onrender.com/api/cart/${item.id}/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

@@ -355,7 +355,7 @@ export default function Services() {
   const fetchServices = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8000/api/services/active_services/", { timeout: 5000 });
+      const response = await axios.get("https://nthealthcarebackend.onrender.com/api/services/active_services/", { timeout: 5000 });
       if (response.data && response.data.length > 0) { setServices(response.data); setError(null); }
       else { setServices([]); setError("No services available at the moment"); }
     } catch {

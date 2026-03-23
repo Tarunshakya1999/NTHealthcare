@@ -15,13 +15,13 @@ const PaymentQR = () => {
     const fetchData = async () => {
       try {
 
-        const qrRes = await axios.get("http://127.0.0.1:8000/api/qrcode/");
+        const qrRes = await axios.get("https://nthealthcarebackend.onrender.com/api/qrcode/");
 
         if (qrRes.data.length > 0) {
           setQr(qrRes.data[0]);
         }
 
-        const cartRes = await axios.get("http://localhost:8000/api/cart/", {
+        const cartRes = await axios.get("https://nthealthcarebackend.onrender.com/api/cart/", {
           headers: {
             Authorization: `Bearer ${token}`
           }

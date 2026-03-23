@@ -18,7 +18,7 @@ export default function Login() {
     setIsSuccess(null);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/token/", {
+      const response = await axios.post("https://nthealthcarebackend.onrender.com/api/token/", {
         username,
         password,
       });

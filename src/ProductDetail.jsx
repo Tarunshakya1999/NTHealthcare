@@ -14,7 +14,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/products/${id}/`)
+      .get(`https://nthealthcarebackend.onrender.com/api/products/${id}/`)
       .then((res) => setProduct(res.data))
       .catch((err) => console.error("Error fetching product:", err));
   }, [id]);
@@ -30,7 +30,7 @@ export default function ProductDetail() {
 
     try {
       await axios.post(
-        "http://localhost:8000/api/cart/",
+        "https://nthealthcarebackend.onrender.com/api/cart/",
         { product: product.id },
         {
           headers: {
