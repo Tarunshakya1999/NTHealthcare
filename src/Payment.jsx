@@ -10,14 +10,53 @@ const PaymentQR = () => {
   const prodName = searchParams.get("name");
   const qty      = searchParams.get("qty");
 
+  // Cart items passed as JSON string:
+  // ?items=%5B%7B%22name%22%3A%22Product%22%2C%22qty%22%3A2%2C%22price%22%3A199%7D%5D
+  const itemsParam = searchParams.get("items");
+  const cartItems = (() => {
+    try { return itemsParam ? JSON.parse(decodeURIComponent(itemsParam)) : []; }
+    catch { return []; }
+  })();
+
   const UPI_ID     = "7011617976@ibl";
   const PAYEE_NAME = "NT Healthcare";
 
   const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent("Payment to NT Healthcare")}`;
 
-  const waMessage = mode === "single"
-    ? `Hello NT Healthcare! I have completed payment of ₹${amount} for ${decodeURIComponent(prodName || "")} (Qty: ${qty || 0}). Here is my screenshot.`
-    : `Hello NT Healthcare! I have completed payment of ₹${amount} for my cart order. Here is my screenshot.`;
+  // WhatsApp message — rich format for both modes
+  const waMessage = (() => {
+    if (mode === "single") {
+      return (
+        `Hello NT Healthcare! 🙏\n\n` +
+        `I have completed the UPI payment.\n\n` +
+        `🛍️ *Order Details:*\n` +
+        `• Product: ${decodeURIComponent(prodName || "")}\n` +
+        `• Qty: ${qty || 1}\n` +
+        `• Amount: ₹${Number(amount).toLocaleString("en-IN")}\n\n` +
+        `Please find the payment screenshot attached.\n\nThank you!`
+      );
+    }
+    // Cart mode
+    const itemLines = cartItems.length > 0
+      ? cartItems
+          .map((item, i) => {
+            const lineTotal = item.price
+              ? ` × ₹${Number(item.price).toLocaleString("en-IN")} = ₹${(item.qty * item.price).toLocaleString("en-IN")}`
+              : "";
+            return `${i + 1}. ${item.name} — Qty: ${item.qty}${lineTotal}`;
+          })
+          .join("\n")
+      : "All cart items";
+
+    return (
+      `Hello NT Healthcare! 🙏\n\n` +
+      `I have completed the UPI payment for my cart order.\n\n` +
+      `🛒 *Order Summary:*\n` +
+      `${itemLines}\n\n` +
+      `💰 *Total Paid: ₹${Number(amount).toLocaleString("en-IN")}*\n\n` +
+      `Please find the payment screenshot attached.\n\nThank you!`
+    );
+  })();
 
   const handleCopy = (e) => {
     navigator.clipboard.writeText(UPI_ID);
@@ -38,26 +77,57 @@ const PaymentQR = () => {
             <p>Secure UPI Payment</p>
           </div>
 
-          {/* Order badge + item row */}
+          {/* Order badge */}
           <span className={`pay-badge ${mode === "single" ? "badge-green" : "badge-amber"}`}>
             {mode === "single" ? "⚡ Buying now" : "🛒 Cart checkout"}
           </span>
 
-          <div className="item-row">
-            <div className="item-info">
-              <div className="item-name">
-                {mode === "single" && prodName
-                  ? decodeURIComponent(prodName)
-                  : "All cart items"}
+          {/* Item(s) display */}
+          {mode === "single" ? (
+            <div className="item-row">
+              <div className="item-info">
+                <div className="item-name">
+                  {prodName ? decodeURIComponent(prodName) : "Product"}
+                </div>
+                {qty && <div className="item-meta">Product · {qty} {qty === "1" ? "unit" : "units"}</div>}
               </div>
-              {mode === "single" && qty && (
-                <div className="item-meta">Product · {qty} {qty === "1" ? "unit" : "units"}</div>
+              {qty && <span className="qty-pill">Qty: {qty}</span>}
+            </div>
+          ) : (
+            <div className="cart-items-box">
+              {cartItems.length > 0 ? (
+                <>
+                  {cartItems.map((item, i) => (
+                    <div className="cart-item-row" key={i}>
+                      <div className="cart-item-left">
+                        <div className="cart-item-name">{item.name}</div>
+                        {item.price && (
+                          <div className="cart-item-price">₹{Number(item.price).toLocaleString("en-IN")} each</div>
+                        )}
+                      </div>
+                      <div className="cart-item-right">
+                        <span className="qty-pill">Qty: {item.qty}</span>
+                        {item.price && (
+                          <div className="cart-item-total">
+                            ₹{(item.qty * item.price).toLocaleString("en-IN")}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="cart-items-footer">
+                    <span>{cartItems.reduce((s, i) => s + i.qty, 0)} items total</span>
+                  </div>
+                </>
+              ) : (
+                <div className="item-row" style={{marginBottom: 0}}>
+                  <div className="item-info">
+                    <div className="item-name">All cart items</div>
+                  </div>
+                </div>
               )}
             </div>
-            {mode === "single" && qty && (
-              <span className="qty-pill">Qty: {qty}</span>
-            )}
-          </div>
+          )}
 
           {/* QR Code */}
           <div className="qr-section">
@@ -184,7 +254,7 @@ const PaymentQR = () => {
         .badge-green { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
         .badge-amber { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
 
-        /* Item row */
+        /* Single item row */
         .item-row {
           background: #f8fafc;
           border: 1px solid #e2e8f0;
@@ -196,10 +266,41 @@ const PaymentQR = () => {
         }
         .item-name { font-size: 0.9rem; font-weight: 600; color: #0f172a; }
         .item-meta { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+
+        /* Cart items box */
+        .cart-items-box {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          margin-bottom: 1.25rem;
+          overflow: hidden;
+          text-align: left;
+        }
+        .cart-item-row {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 0.65rem 1rem;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .cart-item-row:last-child { border-bottom: none; }
+        .cart-item-name { font-size: 0.85rem; font-weight: 600; color: #0f172a; }
+        .cart-item-price { font-size: 0.72rem; color: #94a3b8; margin-top: 1px; }
+        .cart-item-right { text-align: right; }
+        .cart-item-total { font-size: 0.78rem; font-weight: 600; color: #334155; margin-top: 4px; }
+        .cart-items-footer {
+          padding: 0.5rem 1rem;
+          background: #f1f5f9;
+          font-size: 0.72rem;
+          color: #64748b;
+          font-weight: 600;
+          text-align: right;
+          border-top: 1px solid #e2e8f0;
+        }
+
+        /* Shared pill */
         .qty-pill {
           background: #eff6ff; color: #2563eb;
           border: 1px solid #bfdbfe;
-          border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+          border-radius: 6px; font-size: 0.72rem; font-weight: 600;
           padding: 3px 10px; white-space: nowrap;
         }
 
