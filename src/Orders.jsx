@@ -1,0 +1,115 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Nav from "./Nav";
+import { Link } from "react-router-dom";
+
+const Orders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("access_token");
+
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get("https://nthealthcarebackend.onrender.com/api/orders/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrders(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchOrders(); }, []);
+
+  const handleCancel = async (orderId) => {
+    if (!window.confirm("Cancel this order?")) return;
+    try {
+      await axios.post(`https://nthealthcarebackend.onrender.com/api/orders/${orderId}/cancel/`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchOrders();
+    } catch (err) {
+      alert("Could not cancel. " + err.response?.data?.error || "");
+    }
+  };
+
+  const handleReturn = async (orderId) => {
+    if (!window.confirm("Request return?")) return;
+    try {
+      await axios.post(`https://nthealthcarebackend.onrender.com/api/orders/${orderId}/request_return/`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchOrders();
+    } catch (err) {
+      alert("Could not request return. " + err.response?.data?.error || "");
+    }
+  };
+
+  const statusColors = {
+    PENDING: "secondary",
+    VERIFIED: "info",
+    PROCESSING: "warning",
+    SHIPPED: "primary",
+    DELIVERED: "success",
+    CANCELLED: "danger",
+    RETURN_REQUESTED: "warning",
+    RETURNED: "dark",
+  };
+
+  return (
+    <>
+      <Nav />
+      <div style={{ minHeight: "100vh", background: "#f8fafc", padding: "2rem" }}>
+        <div className="container">
+          <h2 className="mb-4">My Orders</h2>
+          {loading ? (
+            <div className="text-center">Loading...</div>
+          ) : orders.length === 0 ? (
+            <div className="text-center">
+              <p>No orders yet.</p>
+              <Link to="/" className="btn btn-primary">Shop Now</Link>
+            </div>
+          ) : (
+            <div className="row g-3">
+              {orders.map((order) => (
+                <div className="col-12" key={order.id}>
+                  <div className="card shadow-sm p-3 rounded-3">
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <h6>Order #{order.id}</h6>
+                        <span className={`badge bg-${statusColors[order.status] || "secondary"}`}>{order.status}</span>
+                        <p className="mt-1 mb-1">Total: ₹{order.total_amount}</p>
+                        <small>{new Date(order.created_at).toLocaleDateString()}</small>
+                      </div>
+                      <div className="text-end">
+                        {order.status === "DELIVERED" && (
+                          <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleReturn(order.id)}>Return</button>
+                        )}
+                        {["PENDING", "VERIFIED", "PROCESSING"].includes(order.status) && (
+                          <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleCancel(order.id)}>Cancel</button>
+                        )}
+                        <Link to="/" className="btn btn-sm btn-outline-primary">Shop More</Link>
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      {order.items?.map((item) => (
+                        <div key={item.id} className="d-flex justify-content-between small">
+                          <span>{item.product_name} x {item.quantity}</span>
+                          <span>₹{item.product_price * item.quantity}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Orders;

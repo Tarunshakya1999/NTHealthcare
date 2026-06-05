@@ -365,16 +365,42 @@ export default function CartPage() {
     (total, item) => total + item.quantity * item.product_price, 0
   );
 
-  // ── Buy single product ──────────────────────────────────────
+  // ── Buy single product → OrderConfirmation ──────────────────────
   const handleBuyNow = (item) => {
     const singleTotal = item.quantity * item.product_price;
-    // Pass amount + product name via URL params
-    navigate(`/payment?amount=${singleTotal}&name=${encodeURIComponent(item.product_name)}&qty=${item.quantity}&mode=single`);
+    const params = new URLSearchParams({
+      amount: singleTotal,
+      mode: "single",
+      name: item.product_name,
+      qty: item.quantity,
+    });
+    // Include item details for order creation
+    const items = [{
+      product_id: item.product_id,         // optional if you have id
+      product_name: item.product_name,
+      product_price: item.product_price,
+      quantity: item.quantity,
+      product_image: item.product_image || "",
+    }];
+    params.set("items", JSON.stringify(items));
+    navigate(`/order-confirmation?${params.toString()}`);
   };
 
-  // ── Checkout all ────────────────────────────────────────────
+  // ── Checkout all → OrderConfirmation ─────────────────────────────
   const handleCheckoutAll = () => {
-    navigate(`/payment?amount=${totalPrice}&mode=all`);
+    const params = new URLSearchParams({
+      amount: totalPrice,
+      mode: "all",
+    });
+    const items = cart.map((item) => ({
+      product_id: item.product_id,
+      product_name: item.product_name,
+      product_price: item.product_price,
+      quantity: item.quantity,
+      product_image: item.product_image || "",
+    }));
+    params.set("items", JSON.stringify(items));
+    navigate(`/order-confirmation?${params.toString()}`);
   };
 
   return (
@@ -445,7 +471,7 @@ export default function CartPage() {
                       disabled={updatingItemId === item.id}
                     >Remove</button>
 
-                    {/* ⚡ Buy Now — only this product */}
+                    {/* ⚡ Buy Now – goes directly to OrderConfirmation */}
                     <button
                       className="buy-now-btn"
                       onClick={() => handleBuyNow(item)}
@@ -467,7 +493,7 @@ export default function CartPage() {
                 <button className="empty-cart-btn" onClick={emptyCart}>
                   🗑 Empty Cart
                 </button>
-                {/* Checkout All */}
+                {/* Checkout All – goes to OrderConfirmation */}
                 <button className="checkout-btn" onClick={handleCheckoutAll}>
                   🛒 Buy All →
                 </button>
