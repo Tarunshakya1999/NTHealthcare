@@ -2,21 +2,23 @@ import React, { useState, useEffect } from "react";
 
 export default function InstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showButton, setShowButton] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowButton(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Check if already installed
+    // Already installed?
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      setIsInstalled(true);
+    }
+
     window.addEventListener("appinstalled", () => {
-      setShowButton(false);
-      console.log("PWA already installed");
+      setIsInstalled(true);
     });
 
     return () => {
@@ -30,14 +32,22 @@ export default function InstallButton() {
       const { outcome } = await deferredPrompt.userChoice;
       console.log(`Install outcome: ${outcome}`);
       setDeferredPrompt(null);
-      if (outcome === "accepted") setShowButton(false);
+      if (outcome === "accepted") setIsInstalled(true);
     } else {
-      console.warn("Install prompt not available yet.");
+      // Manual instructions for laptop / unsupported browsers
+      alert(
+        "Install NT Healthcare App manually:\n\n" +
+        "📱 Mobile (Chrome/Edge):\n" +
+        "• Tap the three‑dot menu → 'Install app' or 'Add to Home Screen'\n\n" +
+        "💻 Laptop (Chrome/Edge):\n" +
+        "• Click the install icon (⊕) in the address bar\n" +
+        "• Or go to Menu → 'Install NT Healthcare...'"
+      );
     }
   };
 
-  // Button only visible when prompt is ready
-  if (!showButton) return null;
+  // Hamesha button dikhega jab tak app installed na ho
+  if (isInstalled) return null;
 
   return (
     <>
