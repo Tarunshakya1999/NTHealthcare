@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Nav from "./Nav";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -34,9 +34,7 @@ const styles = `
     padding: 40px 20px 80px;
   }
 
-  .cart-header {
-    margin-bottom: 36px;
-  }
+  .cart-header { margin-bottom: 36px; }
 
   .cart-header h2 {
     font-family: 'Playfair Display', serif;
@@ -47,13 +45,8 @@ const styles = `
     background-clip: text;
   }
 
-  .cart-header p {
-    color: var(--muted);
-    font-size: 0.9rem;
-    margin-top: 4px;
-  }
+  .cart-header p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
 
-  /* ── EMPTY STATE ── */
   .empty-state {
     display: flex;
     flex-direction: column;
@@ -65,8 +58,7 @@ const styles = `
   }
 
   .empty-cart-svg {
-    width: 180px;
-    height: 180px;
+    width: 180px; height: 180px;
     margin-bottom: 32px;
     animation: floatCart 3s ease-in-out infinite;
   }
@@ -76,18 +68,8 @@ const styles = `
     50%       { transform: translateY(-14px); }
   }
 
-  .empty-state h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-  }
-
-  .empty-state p {
-    color: var(--muted);
-    font-size: 0.95rem;
-    max-width: 300px;
-    line-height: 1.6;
-  }
+  .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 10px; }
+  .empty-state p { color: var(--muted); font-size: 0.95rem; max-width: 300px; line-height: 1.6; }
 
   .shop-btn {
     display: inline-block;
@@ -102,15 +84,8 @@ const styles = `
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 4px 20px rgba(255,107,53,0.35);
   }
+  .shop-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,107,53,0.5); color: #fff; text-decoration: none; }
 
-  .shop-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(255,107,53,0.5);
-    color: #fff;
-    text-decoration: none;
-  }
-
-  /* ── CART ITEMS ── */
   .cart-item {
     display: flex;
     align-items: center;
@@ -123,16 +98,11 @@ const styles = `
     transition: transform 0.2s, box-shadow 0.2s;
     animation: fadeSlideUp 0.4s ease both;
   }
-
-  .cart-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  }
+  .cart-item:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
 
   .item-img-wrap {
     flex-shrink: 0;
-    width: 90px;
-    height: 90px;
+    width: 90px; height: 90px;
     background: #2a2838;
     border-radius: 14px;
     overflow: hidden;
@@ -140,13 +110,7 @@ const styles = `
     align-items: center;
     justify-content: center;
   }
-
-  .item-img-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 8px;
-  }
+  .item-img-wrap img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
 
   .item-info { flex: 1; min-width: 0; }
 
@@ -159,32 +123,20 @@ const styles = `
     margin-bottom: 4px;
   }
 
-  .item-price {
-    color: var(--accent2);
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: 14px;
-  }
+  .item-price { color: var(--accent2); font-size: 0.9rem; font-weight: 500; margin-bottom: 14px; }
 
-  .qty-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
+  .qty-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
   .qty-control {
     display: flex;
     align-items: center;
-    gap: 0;
     background: #2a2838;
     border-radius: 10px;
     overflow: hidden;
   }
 
   .qty-btn {
-    width: 34px;
-    height: 34px;
+    width: 34px; height: 34px;
     background: transparent;
     border: none;
     color: var(--text);
@@ -192,20 +144,13 @@ const styles = `
     cursor: pointer;
     transition: background 0.15s;
   }
-
   .qty-btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
   .qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .qty-val {
-    min-width: 32px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
+  .qty-val { min-width: 32px; text-align: center; font-weight: 600; font-size: 0.95rem; }
 
   .spinner-sm {
-    width: 16px;
-    height: 16px;
+    width: 16px; height: 16px;
     border: 2px solid rgba(255,255,255,0.2);
     border-top-color: var(--accent);
     border-radius: 50%;
@@ -229,8 +174,9 @@ const styles = `
   .remove-btn:hover { background: rgba(230,57,70,0.25); transform: scale(1.04); }
   .remove-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .buy-btn-sm {
-    background: var(--success);
+  /* Buy Now — single product */
+  .buy-now-btn {
+    background: linear-gradient(135deg, var(--success), #25a370);
     border: none;
     color: #fff;
     border-radius: 8px;
@@ -238,15 +184,14 @@ const styles = `
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
-    text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    transition: background 0.2s, transform 0.15s;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 3px 12px rgba(44,182,125,0.3);
   }
-  .buy-btn-sm:hover { background: #25a370; transform: scale(1.04); color: #fff; text-decoration: none; }
+  .buy-now-btn:hover { transform: scale(1.04); box-shadow: 0 6px 18px rgba(44,182,125,0.45); }
 
-  /* ── SUMMARY BAR ── */
   .summary-bar {
     background: var(--card);
     border: 1px solid var(--border);
@@ -262,11 +207,7 @@ const styles = `
   }
 
   .total-label { color: var(--muted); font-size: 0.85rem; margin-bottom: 2px; }
-  .total-amt {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    color: var(--accent2);
-  }
+  .total-amt { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--accent2); }
 
   .summary-actions { display: flex; gap: 12px; align-items: center; }
 
@@ -283,6 +224,7 @@ const styles = `
   }
   .empty-cart-btn:hover { background: rgba(230,57,70,0.1); }
 
+  /* Checkout All — orange */
   .checkout-btn {
     background: linear-gradient(135deg, var(--accent) 0%, #ff9a5c 100%);
     border: none;
@@ -291,21 +233,15 @@ const styles = `
     padding: 12px 28px;
     font-size: 0.92rem;
     font-weight: 600;
-    text-decoration: none;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     box-shadow: 0 4px 20px rgba(255,107,53,0.3);
     transition: transform 0.2s, box-shadow 0.2s;
   }
-  .checkout-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(255,107,53,0.5);
-    color: #fff;
-    text-decoration: none;
-  }
+  .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,107,53,0.5); }
 
-  /* ── LOADING ── */
   .loading-screen {
     display: flex;
     flex-direction: column;
@@ -318,8 +254,7 @@ const styles = `
   }
 
   .loader-ring {
-    width: 48px;
-    height: 48px;
+    width: 48px; height: 48px;
     border: 3px solid rgba(255,255,255,0.08);
     border-top-color: var(--accent);
     border-radius: 50%;
@@ -331,13 +266,6 @@ const styles = `
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* stagger items */
-  .cart-item:nth-child(1) { animation-delay: 0.05s; }
-  .cart-item:nth-child(2) { animation-delay: 0.1s; }
-  .cart-item:nth-child(3) { animation-delay: 0.15s; }
-  .cart-item:nth-child(4) { animation-delay: 0.2s; }
-  .cart-item:nth-child(5) { animation-delay: 0.25s; }
-
   @media (max-width: 560px) {
     .cart-item { flex-direction: column; align-items: flex-start; }
     .item-img-wrap { width: 70px; height: 70px; }
@@ -347,54 +275,29 @@ const styles = `
   }
 `;
 
-// ── Animated Empty Cart SVG ──────────────────────────────────────────────────
 const EmptyCartIllustration = () => (
-  <svg
-    className="empty-cart-svg"
-    viewBox="0 0 200 200"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* Cart body */}
-    <path
-      d="M40 60h130l-18 70H58L40 60Z"
-      fill="#211f2e"
-      stroke="#ff6b35"
-      strokeWidth="3"
-      strokeLinejoin="round"
-    />
-    {/* Cart handle */}
-    <path
-      d="M20 40h16l22 90"
-      stroke="#ff6b35"
-      strokeWidth="3"
-      strokeLinecap="round"
-    />
-    {/* Wheels */}
+  <svg className="empty-cart-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M40 60h130l-18 70H58L40 60Z" fill="#211f2e" stroke="#ff6b35" strokeWidth="3" strokeLinejoin="round" />
+    <path d="M20 40h16l22 90" stroke="#ff6b35" strokeWidth="3" strokeLinecap="round" />
     <circle cx="76" cy="148" r="10" fill="#1a1826" stroke="#ff6b35" strokeWidth="3" />
     <circle cx="138" cy="148" r="10" fill="#1a1826" stroke="#ff6b35" strokeWidth="3" />
-    {/* X inside cart – empty indicator */}
     <line x1="88" y1="85" x2="118" y2="110" stroke="#a7a9be" strokeWidth="2.5" strokeLinecap="round" />
     <line x1="118" y1="85" x2="88" y2="110" stroke="#a7a9be" strokeWidth="2.5" strokeLinecap="round" />
-    {/* Stars / sparkles */}
     <circle cx="160" cy="50" r="3" fill="#f7c59f" opacity="0.7">
       <animate attributeName="opacity" values="0.7;0.1;0.7" dur="2s" repeatCount="indefinite" />
     </circle>
     <circle cx="50" cy="45" r="2" fill="#ff6b35" opacity="0.6">
       <animate attributeName="opacity" values="0.6;0.15;0.6" dur="2.5s" repeatCount="indefinite" />
     </circle>
-    <circle cx="170" cy="90" r="2.5" fill="#f7c59f" opacity="0.5">
-      <animate attributeName="opacity" values="0.5;0.1;0.5" dur="1.8s" repeatCount="indefinite" />
-    </circle>
   </svg>
 );
 
-// ── Main Component ───────────────────────────────────────────────────────────
 export default function CartPage() {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingItemId, setUpdatingItemId] = useState(null);
   const token = localStorage.getItem("access_token");
+  const navigate = useNavigate();
 
   const fetchCart = async () => {
     setLoading(true);
@@ -459,9 +362,20 @@ export default function CartPage() {
   };
 
   const totalPrice = cart.reduce(
-    (total, item) => total + item.quantity * item.product_price,
-    0
+    (total, item) => total + item.quantity * item.product_price, 0
   );
+
+  // ── Buy single product ──────────────────────────────────────
+  const handleBuyNow = (item) => {
+    const singleTotal = item.quantity * item.product_price;
+    // Pass amount + product name via URL params
+    navigate(`/payment?amount=${singleTotal}&name=${encodeURIComponent(item.product_name)}&qty=${item.quantity}&mode=single`);
+  };
+
+  // ── Checkout all ────────────────────────────────────────────
+  const handleCheckoutAll = () => {
+    navigate(`/payment?amount=${totalPrice}&mode=all`);
+  };
 
   return (
     <div className="cart-root">
@@ -476,7 +390,6 @@ export default function CartPage() {
           )}
         </div>
 
-        {/* Loading */}
         {loading && (
           <div className="loading-screen">
             <div className="loader-ring" />
@@ -484,7 +397,6 @@ export default function CartPage() {
           </div>
         )}
 
-        {/* Empty state */}
         {!loading && cart.length === 0 && (
           <div className="empty-state">
             <EmptyCartIllustration />
@@ -494,7 +406,6 @@ export default function CartPage() {
           </div>
         )}
 
-        {/* Items */}
         {!loading && cart.length > 0 && (
           <>
             {cart.map((item, i) => (
@@ -510,7 +421,6 @@ export default function CartPage() {
                   </div>
 
                   <div className="qty-row">
-                    {/* Qty control */}
                     <div className="qty-control">
                       <button
                         className="qty-btn"
@@ -535,7 +445,13 @@ export default function CartPage() {
                       disabled={updatingItemId === item.id}
                     >Remove</button>
 
-                    <Link to="/payment" className="buy-btn-sm">⚡ Buy Now</Link>
+                    {/* ⚡ Buy Now — only this product */}
+                    <button
+                      className="buy-now-btn"
+                      onClick={() => handleBuyNow(item)}
+                    >
+                      ⚡ Buy Now
+                    </button>
                   </div>
                 </div>
               </div>
@@ -544,16 +460,17 @@ export default function CartPage() {
             {/* Summary bar */}
             <div className="summary-bar">
               <div>
-                <div className="total-label">Order Total</div>
+                <div className="total-label">Cart Total ({cart.length} items)</div>
                 <div className="total-amt">₹{totalPrice.toLocaleString("en-IN")}</div>
               </div>
               <div className="summary-actions">
                 <button className="empty-cart-btn" onClick={emptyCart}>
                   🗑 Empty Cart
                 </button>
-                <Link to="/payment" className="checkout-btn">
-                  Checkout →
-                </Link>
+                {/* Checkout All */}
+                <button className="checkout-btn" onClick={handleCheckoutAll}>
+                  🛒 Buy All →
+                </button>
               </div>
             </div>
           </>
