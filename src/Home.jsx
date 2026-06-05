@@ -790,9 +790,12 @@ export default function Home() {
                 </p>
 
                 <div className="hero-cta-group">
-                  <Link to="/products" className="btn-primary-nt">
+                  <button
+                    className="btn-primary-nt"
+                    onClick={() => document.getElementById("products-section").scrollIntoView({ behavior: "smooth" })}
+                  >
                     <i className="fas fa-capsules"></i> Shop Now
-                  </Link>
+                  </button>
                   <button className="btn-outline-nt" onClick={handleWhatsApp}>
                     <i className="fab fa-whatsapp"></i> Get Advice
                   </button>
@@ -866,7 +869,7 @@ export default function Home() {
       {/* ══════════════════════════════════════
           PRODUCTS SECTION
       ══════════════════════════════════════ */}
-      <section className="products-section">
+      <section className="products-section" id="products-section">
         <div className="container">
           <div className="section-header" data-aos="fade-up">
             <span className="section-tag">Our Products</span>
