@@ -1,4 +1,3 @@
-// src/components/Home.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -8,7 +7,8 @@ import AOS from "aos";
 import "./App.css";
 import Nav from "./Nav";
 import Footer from "./Footer";
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import InstallButton from "./InstallButton";
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -18,9 +18,12 @@ export default function Home() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const username = localStorage.getItem("username");
 
-  // CTA button click handlers
+  // CTA handlers
   const handleWhatsApp = () => {
-    window.open("https://wa.me/917011617976?text=Hello%20NT%20Healthcare%2C%20I%20need%20assistance%20with%20your%20products.", "_blank");
+    window.open(
+      "https://wa.me/917011617976?text=Hello%20NT%20Healthcare%2C%20I%20need%20assistance%20with%20your%20products.",
+      "_blank"
+    );
   };
 
   const handleCall = () => {
@@ -31,28 +34,24 @@ export default function Home() {
     window.open("https://instagram.com/nthealthcare", "_blank");
   };
 
-  // Scroll to top function
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Show/hide scroll to top button
+  // Show/hide scroll button
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
-      }
-    };
+    const handleScroll = () => setShowScrollTop(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Fetch products
   const getData = async () => {
     try {
-      const response = await axios.get("https://nthealthcarebackend.onrender.com/api/products/");
-      setData(response.data);
+      const res = await axios.get(
+        "https://nthealthcarebackend.onrender.com/api/products/"
+      );
+      setData(res.data);
     } catch (err) {
       console.error("Failed to fetch data:", err);
       setError("Something went wrong while fetching data");
@@ -66,165 +65,171 @@ export default function Home() {
 
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`https://nthealthcarebackend.onrender.com/api/products/${id}/`);
+      await axios.delete(
+        `https://nthealthcarebackend.onrender.com/api/products/${id}/`
+      );
       setMsg("Product deleted successfully!");
       setData(data.filter((product) => product.id !== id));
-      setTimeout(() => {
-        setMsg("");
-      }, 2000);
+      setTimeout(() => setMsg(""), 2000);
     } catch (err) {
       console.error(err);
       setMsg("Failed to delete product");
     }
   };
 
-  const filteredData = data.filter(item =>
+  const filteredData = data.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Styles for CTA buttons
-  const ctaStyles = {
-    container: {
-      position: "fixed",
-      right: "20px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      zIndex: 1000,
-      display: "flex",
-      flexDirection: "column",
-      gap: "15px",
-    },
-    button: {
-      width: "60px",
-      height: "60px",
-      borderRadius: "50%",
-      border: "none",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: "24px",
-      color: "white",
-      boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
-      transition: "all 0.3s ease",
-      position: "relative",
-      animation: "pulse 2s infinite",
-    },
-    whatsapp: {
-      background: "linear-gradient(135deg, #25D366, #128C7E)",
-    },
-    call: {
-      background: "linear-gradient(135deg, #007bff, #00d4ff)",
-    },
-    instagram: {
-      background: "linear-gradient(45deg, #f09433, #d62976, #962fbf, #4f5bd5)",
-    },
-    scrollTop: {
-      background: "linear-gradient(135deg, #6c757d, #495057)",
-      marginTop: "20px",
-    },
-    tooltip: {
-      position: "absolute",
-      right: "70px",
-      background: "white",
-      color: "#333",
-      padding: "8px 15px",
-      borderRadius: "20px",
-      fontSize: "14px",
-      fontWeight: "600",
-      whiteSpace: "nowrap",
-      boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-      opacity: 0,
-      visibility: "hidden",
-      transition: "all 0.3s ease",
-    },
+  // ====== CTA + Install Button Styles ======
+  const ctaContainerStyle = {
+    position: "fixed",
+    right: "20px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    zIndex: 9999,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "12px",
+  };
+
+  const ctaButtonStyle = {
+    width: "58px",
+    height: "58px",
+    borderRadius: "50%",
+    border: "none",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "22px",
+    color: "white",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+    transition: "all 0.3s ease",
+    position: "relative",
+    outline: "none",
+  };
+
+  const tooltipStyle = {
+    position: "absolute",
+    right: "70px",
+    background: "white",
+    color: "#333",
+    padding: "6px 14px",
+    borderRadius: "20px",
+    fontSize: "13px",
+    fontWeight: "600",
+    whiteSpace: "nowrap",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+    opacity: 0,
+    visibility: "hidden",
+    transition: "all 0.3s ease",
+    pointerEvents: "none",
   };
 
   return (
     <>
       <Nav searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-      {/* Floating CTA Buttons */}
-      <div style={ctaStyles.container}>
-        {/* WhatsApp Button */}
+      {/* ===== FLOATING BUTTONS ===== */}
+      <div style={ctaContainerStyle}>
+        {/* Install App (PWA) – only shows when install prompt is available */}
+        <InstallButton />
+
+        {/* WhatsApp */}
         <button
-          style={{ ...ctaStyles.button, ...ctaStyles.whatsapp }}
+          style={{
+            ...ctaButtonStyle,
+            background: "linear-gradient(135deg, #25D366, #128C7E)",
+          }}
           onClick={handleWhatsApp}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.1) rotate(5deg)";
-            e.currentTarget.querySelector(".tooltip").style.opacity = "1";
-            e.currentTarget.querySelector(".tooltip").style.visibility = "visible";
+            e.currentTarget.style.transform = "scale(1.1)";
+            const tip = e.currentTarget.querySelector(".tooltip");
+            if (tip) { tip.style.opacity = "1"; tip.style.visibility = "visible"; }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1) rotate(0deg)";
-            e.currentTarget.querySelector(".tooltip").style.opacity = "0";
-            e.currentTarget.querySelector(".tooltip").style.visibility = "hidden";
+            e.currentTarget.style.transform = "scale(1)";
+            const tip = e.currentTarget.querySelector(".tooltip");
+            if (tip) { tip.style.opacity = "0"; tip.style.visibility = "hidden"; }
           }}
         >
           <i className="fab fa-whatsapp"></i>
-          <span className="tooltip" style={ctaStyles.tooltip}>WhatsApp</span>
+          <span className="tooltip" style={tooltipStyle}>WhatsApp</span>
         </button>
 
-        {/* Call Now Button */}
+        {/* Call */}
         <button
-          style={{ ...ctaStyles.button, ...ctaStyles.call }}
+          style={{
+            ...ctaButtonStyle,
+            background: "linear-gradient(135deg, #007bff, #00d4ff)",
+          }}
           onClick={handleCall}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.1) rotate(5deg)";
-            e.currentTarget.querySelector(".tooltip").style.opacity = "1";
-            e.currentTarget.querySelector(".tooltip").style.visibility = "visible";
+            e.currentTarget.style.transform = "scale(1.1)";
+            const tip = e.currentTarget.querySelector(".tooltip");
+            if (tip) { tip.style.opacity = "1"; tip.style.visibility = "visible"; }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1) rotate(0deg)";
-            e.currentTarget.querySelector(".tooltip").style.opacity = "0";
-            e.currentTarget.querySelector(".tooltip").style.visibility = "hidden";
+            e.currentTarget.style.transform = "scale(1)";
+            const tip = e.currentTarget.querySelector(".tooltip");
+            if (tip) { tip.style.opacity = "0"; tip.style.visibility = "hidden"; }
           }}
         >
           <i className="fas fa-phone-alt"></i>
-          <span className="tooltip" style={ctaStyles.tooltip}>Call Now</span>
+          <span className="tooltip" style={tooltipStyle}>Call Now</span>
         </button>
 
-        {/* Instagram Button */}
+        {/* Instagram */}
         <button
-          style={{ ...ctaStyles.button, ...ctaStyles.instagram }}
+          style={{
+            ...ctaButtonStyle,
+            background: "linear-gradient(45deg, #f09433, #d62976, #962fbf, #4f5bd5)",
+          }}
           onClick={handleInstagram}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.1) rotate(5deg)";
-            e.currentTarget.querySelector(".tooltip").style.opacity = "1";
-            e.currentTarget.querySelector(".tooltip").style.visibility = "visible";
+            e.currentTarget.style.transform = "scale(1.1)";
+            const tip = e.currentTarget.querySelector(".tooltip");
+            if (tip) { tip.style.opacity = "1"; tip.style.visibility = "visible"; }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1) rotate(0deg)";
-            e.currentTarget.querySelector(".tooltip").style.opacity = "0";
-            e.currentTarget.querySelector(".tooltip").style.visibility = "hidden";
+            e.currentTarget.style.transform = "scale(1)";
+            const tip = e.currentTarget.querySelector(".tooltip");
+            if (tip) { tip.style.opacity = "0"; tip.style.visibility = "hidden"; }
           }}
         >
           <i className="fab fa-instagram"></i>
-          <span className="tooltip" style={ctaStyles.tooltip}>Instagram</span>
+          <span className="tooltip" style={tooltipStyle}>Instagram</span>
         </button>
 
-        {/* Scroll to Top Button (shows when scrolled) */}
+        {/* Scroll to Top – shown only when scrolled down */}
         {showScrollTop && (
           <button
-            style={{ ...ctaStyles.button, ...ctaStyles.scrollTop }}
+            style={{
+              ...ctaButtonStyle,
+              background: "linear-gradient(135deg, #6c757d, #495057)",
+              marginTop: "6px",
+            }}
             onClick={scrollToTop}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "scale(1.1)";
-              e.currentTarget.querySelector(".tooltip").style.opacity = "1";
-              e.currentTarget.querySelector(".tooltip").style.visibility = "visible";
+              const tip = e.currentTarget.querySelector(".tooltip");
+              if (tip) { tip.style.opacity = "1"; tip.style.visibility = "visible"; }
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "scale(1)";
-              e.currentTarget.querySelector(".tooltip").style.opacity = "0";
-              e.currentTarget.querySelector(".tooltip").style.visibility = "hidden";
+              const tip = e.currentTarget.querySelector(".tooltip");
+              if (tip) { tip.style.opacity = "0"; tip.style.visibility = "hidden"; }
             }}
           >
             <i className="fas fa-arrow-up"></i>
-            <span className="tooltip" style={ctaStyles.tooltip}>Back to Top</span>
+            <span className="tooltip" style={tooltipStyle}>Back to Top</span>
           </button>
         )}
       </div>
 
+      {/* ===== PRODUCTS SECTION ===== */}
       <div className="container my-5">
         {msg && <div className="alert alert-info text-center">{msg}</div>}
         {error && <div className="alert alert-danger text-center">{error}</div>}
@@ -279,25 +284,27 @@ export default function Home() {
                         </span>
                       </p>
 
-                      <Link to={`/product/${item.id}`} className="btn gradient-btn w-100 mt-2 rounded-pill">
+                      <Link
+                        to={`/product/${item.id}`}
+                        className="btn gradient-btn w-100 mt-2 rounded-pill"
+                      >
                         <i className="fa-solid fa-eye"></i> View Detail
                       </Link>
 
                       {username === "admin" && (
-                        <Link to={`/update/${item.id}`}>
-                          <button className="btn btn-warning w-100 mt-2 rounded-pill">
-                            <i className="fa-solid fa-pen-to-square"></i> Update
+                        <>
+                          <Link to={`/update/${item.id}`}>
+                            <button className="btn btn-warning w-100 mt-2 rounded-pill">
+                              <i className="fa-solid fa-pen-to-square"></i> Update
+                            </button>
+                          </Link>
+                          <button
+                            className="btn btn-danger w-100 mt-2 rounded-pill"
+                            onClick={() => deleteProduct(item.id)}
+                          >
+                            <i className="fa-solid fa-trash"></i> Delete Now
                           </button>
-                        </Link>
-                      )}
-
-                      {username === "admin" && (
-                        <button
-                          className="btn btn-danger w-100 mt-2 rounded-pill"
-                          onClick={() => deleteProduct(item.id)}
-                        >
-                          <i className="fa-solid fa-trash"></i> Delete Now
-                        </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -310,9 +317,10 @@ export default function Home() {
 
       <Footer />
 
-      {/* Add animations CSS */}
+      {/* ===== CUSTOM ANIMATIONS ===== */}
       <style>{`
-        @keyframes pulse {
+        /* Floating button animation */
+        @keyframes pulseFloat {
           0% {
             box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
           }
@@ -341,36 +349,40 @@ export default function Home() {
           transition: all 0.3s ease;
           border-radius: 15px;
           overflow: hidden;
+          background: white;
         }
 
         .product-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+          transform: translateY(-8px);
+          box-shadow: 0 20px 35px rgba(0, 0, 0, 0.15) !important;
         }
 
         .product-image {
           height: 200px;
           object-fit: contain;
           transition: all 0.3s ease;
+          background: #f8f9fa;
         }
 
         .product-card:hover .product-image {
-          transform: scale(1.05);
+          transform: scale(1.07);
         }
 
+        /* Mobile: move floating buttons to bottom row */
         @media (max-width: 768px) {
           .cta-container {
-            top: auto;
-            bottom: 20px;
-            transform: none;
-            flex-direction: row;
-            right: 10px;
+            top: auto !important;
+            bottom: 15px;
+            transform: none !important;
+            right: 15px;
+            flex-direction: row !important;
+            gap: 10px;
           }
-          
+
           .cta-button {
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
+            width: 48px !important;
+            height: 48px !important;
+            font-size: 20px !important;
           }
         }
       `}</style>
