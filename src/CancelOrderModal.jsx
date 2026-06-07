@@ -9,6 +9,7 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [imgFailed, setImgFailed] = useState(false); // to hide broken images
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,17 +56,17 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
           You are about to request cancellation of Order #{order.id}
         </p>
 
-        {/* Product image + info */}
+        {/* Product info + image (only if image URL exists) */}
         {firstItem && (
           <div className="item-summary">
-            <img
-              src={firstItem.product_image || "/placeholder.png"}
-              alt={firstItem.product_name}
-              className="item-img"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.png";
-              }}
-            />
+            {firstItem.product_image && !imgFailed && (
+              <img
+                src={firstItem.product_image}
+                alt={firstItem.product_name}
+                className="item-img"
+                onError={() => setImgFailed(true)}
+              />
+            )}
             <div className="item-info">
               <div className="item-name">{firstItem.product_name}</div>
               <div className="item-meta">Qty: {firstItem.quantity}</div>
@@ -155,8 +156,9 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
         }
         .item-img {
           width: 60px; height: 60px; object-fit: contain; border-radius: 8px;
-          background: #e2e8f0; /* subtle background while loading */
+          background: #e2e8f0;
         }
+        .item-info { flex: 1; }
         .item-name { font-weight: 700; color: #0f172a; }
         .item-meta { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
 
