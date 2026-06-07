@@ -3,18 +3,21 @@ import axios from "axios";
 import Nav from "./Nav";
 import { Link } from "react-router-dom";
 import CancelOrderModal from "./CancelOrderModal";
+import ReturnRequestModal from "./ReturnRequestModal";   // 🆕 return modal
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [cancelOrderId, setCancelOrderId] = useState(null);   // store order object for modal
+  const [cancelOrderId, setCancelOrderId] = useState(null);
+  const [returnOrder, setReturnOrder] = useState(null);   // 🆕 store full order object
   const token = localStorage.getItem("access_token");
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("https://nthealthcarebackend.onrender.com/api/orders/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://nthealthcarebackend.onrender.com/api/orders/",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setOrders(res.data);
     } catch (err) {
       console.error(err);
@@ -25,13 +28,35 @@ const Orders = () => {
 
   useEffect(() => { fetchOrders(); }, []);
 
+  // Cancel modal callbacks
   const handleCancelSuccess = () => {
     setCancelOrderId(null);
     fetchOrders();
   };
 
-  const handleReturn = async (orderId) => {
-    // ... same as before
+  // Return modal callbacks
+  const handleReturnSuccess = () => {
+    setReturnOrder(null);
+    fetchOrders();
+    alert("Return request submitted! We'll review it shortly.");
+  };
+
+  // Check if order can be returned (within 7 days of delivery)
+  const canReturn = (order) => {
+    if (!order.delivered_at) return false;
+    const days = Math.floor(
+      (new Date() - new Date(order.delivered_at)) / (1000 * 60 * 60 * 24)
+    );
+    return days <= 7;
+  };
+
+  // Days left for return
+  const daysLeft = (order) => {
+    if (!order.delivered_at) return 0;
+    return Math.max(
+      0,
+      7 - Math.floor((new Date() - new Date(order.delivered_at)) / (1000 * 60 * 60 * 24))
+    );
   };
 
   const statusColors = {
@@ -43,7 +68,7 @@ const Orders = () => {
     CANCELLED: "danger",
     RETURN_REQUESTED: "warning",
     RETURNED: "dark",
-    CANCELLATION_REQUESTED: "warning",   // orange-like
+    CANCELLATION_REQUESTED: "warning",
   };
 
   return (
@@ -67,15 +92,47 @@ const Orders = () => {
                     <div className="d-flex justify-content-between">
                       <div>
                         <h6>Order #{order.id}</h6>
-                        <span className={`badge bg-${statusColors[order.status] || "secondary"}`}>{order.status}</span>
+                        <span
+                          className={`badge bg-${statusColors[order.status] || "secondary"}`}
+                        >
+                          {order.status}
+                        </span>
                         <p className="mt-1 mb-1">Total: ₹{order.total_amount}</p>
-                        <small>{new Date(order.created_at).toLocaleDateString()}</small>
-                      </div>
-                      <div className="text-end">
-                        {order.status === "DELIVERED" && (
-                          <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleReturn(order.id)}>Return</button>
+                        <small>
+                          {new Date(order.created_at).toLocaleDateString()}
+                        </small>
+
+                        {/* Return countdown */}
+                        {order.status === "DELIVERED" && canReturn(order) && (
+                          <div className="mt-2">
+                            <small className="text-success">
+                              {daysLeft(order)} day{daysLeft(order) !== 1 ? "s" : ""}{" "}
+                              left to return
+                            </small>
+                          </div>
                         )}
-                        {["PENDING", "VERIFIED", "PROCESSING"].includes(order.status) && (
+                        {order.status === "DELIVERED" && !canReturn(order) && (
+                          <div className="mt-2">
+                            <small className="text-danger">Return window expired</small>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="text-end">
+                        {/* Return button – opens ReturnRequestModal */}
+                        {order.status === "DELIVERED" && canReturn(order) && (
+                          <button
+                            className="btn btn-sm btn-outline-warning me-2"
+                            onClick={() => setReturnOrder(order)}
+                          >
+                            Return
+                          </button>
+                        )}
+
+                        {/* Cancel button – opens CancelOrderModal */}
+                        {["PENDING", "VERIFIED", "PROCESSING"].includes(
+                          order.status
+                        ) && (
                           <button
                             className="btn btn-sm btn-outline-danger me-2"
                             onClick={() => setCancelOrderId(order.id)}
@@ -83,16 +140,28 @@ const Orders = () => {
                             Cancel
                           </button>
                         )}
+
                         {order.status === "CANCELLATION_REQUESTED" && (
-                          <span className="badge bg-warning text-dark">Cancellation Pending</span>
+                          <span className="badge bg-warning text-dark">
+                            Cancellation Pending
+                          </span>
                         )}
-                        <Link to="/" className="btn btn-sm btn-outline-primary">Shop More</Link>
+
+                        <Link to="/" className="btn btn-sm btn-outline-primary">
+                          Shop More
+                        </Link>
                       </div>
                     </div>
+
                     <div className="mt-2">
                       {order.items?.map((item) => (
-                        <div key={item.id} className="d-flex justify-content-between small">
-                          <span>{item.product_name} x {item.quantity}</span>
+                        <div
+                          key={item.id}
+                          className="d-flex justify-content-between small"
+                        >
+                          <span>
+                            {item.product_name} x {item.quantity}
+                          </span>
                           <span>₹{item.product_price * item.quantity}</span>
                         </div>
                       ))}
@@ -108,9 +177,18 @@ const Orders = () => {
       {/* Cancel Modal */}
       {cancelOrderId && (
         <CancelOrderModal
-          order={orders.find(o => o.id === cancelOrderId)}
+          order={orders.find((o) => o.id === cancelOrderId)}
           onClose={() => setCancelOrderId(null)}
           onSuccess={handleCancelSuccess}
+        />
+      )}
+
+      {/* Return Modal */}
+      {returnOrder && (
+        <ReturnRequestModal
+          order={returnOrder}
+          onClose={() => setReturnOrder(null)}
+          onSuccess={handleReturnSuccess}
         />
       )}
     </>
