@@ -9,7 +9,6 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [imgFailed, setImgFailed] = useState(false); // to hide broken images
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,21 +55,11 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
           You are about to request cancellation of Order #{order.id}
         </p>
 
-        {/* Product info + image (only if image URL exists) */}
+        {/* Product info (no image) */}
         {firstItem && (
-          <div className="item-summary">
-            {firstItem.product_image && !imgFailed && (
-              <img
-                src={firstItem.product_image}
-                alt={firstItem.product_name}
-                className="item-img"
-                onError={() => setImgFailed(true)}
-              />
-            )}
-            <div className="item-info">
-              <div className="item-name">{firstItem.product_name}</div>
-              <div className="item-meta">Qty: {firstItem.quantity}</div>
-            </div>
+          <div className="product-info-box">
+            <div className="product-name">{firstItem.product_name}</div>
+            <div className="product-qty">Quantity: {firstItem.quantity}</div>
           </div>
         )}
 
@@ -149,18 +138,13 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
         .modal-title { margin: 0 0 0.3rem; font-size: 1.5rem; color: #0f172a; }
         .modal-subtitle { font-size: 0.85rem; color: #475569; margin-bottom: 1.5rem; }
 
-        /* Item summary with image */
-        .item-summary {
-          display: flex; gap: 12px; background: #f1f5f9; border-radius: 12px;
-          padding: 12px; margin-bottom: 1.5rem; align-items: center;
+        /* Product info box (no image) */
+        .product-info-box {
+          background: #f1f5f9; border-radius: 12px; padding: 16px;
+          margin-bottom: 1.5rem; text-align: center;
         }
-        .item-img {
-          width: 60px; height: 60px; object-fit: contain; border-radius: 8px;
-          background: #e2e8f0;
-        }
-        .item-info { flex: 1; }
-        .item-name { font-weight: 700; color: #0f172a; }
-        .item-meta { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+        .product-name { font-weight: 800; font-size: 1.1rem; color: #0f172a; margin-bottom: 4px; }
+        .product-qty { font-size: 0.9rem; color: #475569; }
 
         .form-group { margin-bottom: 1rem; }
         .form-group label {
