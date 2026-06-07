@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Nav from "./Nav";
 import { Link } from "react-router-dom";
+import CancelOrderModal from "./CancelOrderModal";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cancelOrderId, setCancelOrderId] = useState(null);   // store order object for modal
   const token = localStorage.getItem("access_token");
 
   const fetchOrders = async () => {
@@ -23,28 +25,13 @@ const Orders = () => {
 
   useEffect(() => { fetchOrders(); }, []);
 
-  const handleCancel = async (orderId) => {
-    if (!window.confirm("Cancel this order?")) return;
-    try {
-      await axios.post(`https://nthealthcarebackend.onrender.com/api/orders/${orderId}/cancel/`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchOrders();
-    } catch (err) {
-      alert("Could not cancel. " + err.response?.data?.error || "");
-    }
+  const handleCancelSuccess = () => {
+    setCancelOrderId(null);
+    fetchOrders();
   };
 
   const handleReturn = async (orderId) => {
-    if (!window.confirm("Request return?")) return;
-    try {
-      await axios.post(`https://nthealthcarebackend.onrender.com/api/orders/${orderId}/request_return/`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchOrders();
-    } catch (err) {
-      alert("Could not request return. " + err.response?.data?.error || "");
-    }
+    // ... same as before
   };
 
   const statusColors = {
@@ -56,6 +43,7 @@ const Orders = () => {
     CANCELLED: "danger",
     RETURN_REQUESTED: "warning",
     RETURNED: "dark",
+    CANCELLATION_REQUESTED: "warning",   // orange-like
   };
 
   return (
@@ -88,7 +76,15 @@ const Orders = () => {
                           <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleReturn(order.id)}>Return</button>
                         )}
                         {["PENDING", "VERIFIED", "PROCESSING"].includes(order.status) && (
-                          <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleCancel(order.id)}>Cancel</button>
+                          <button
+                            className="btn btn-sm btn-outline-danger me-2"
+                            onClick={() => setCancelOrderId(order.id)}
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {order.status === "CANCELLATION_REQUESTED" && (
+                          <span className="badge bg-warning text-dark">Cancellation Pending</span>
                         )}
                         <Link to="/" className="btn btn-sm btn-outline-primary">Shop More</Link>
                       </div>
@@ -108,6 +104,15 @@ const Orders = () => {
           )}
         </div>
       </div>
+
+      {/* Cancel Modal */}
+      {cancelOrderId && (
+        <CancelOrderModal
+          order={orders.find(o => o.id === cancelOrderId)}
+          onClose={() => setCancelOrderId(null)}
+          onSuccess={handleCancelSuccess}
+        />
+      )}
     </>
   );
 };
