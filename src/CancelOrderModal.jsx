@@ -12,7 +12,7 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -31,7 +31,8 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
       );
       onSuccess();
     } catch (err) {
-      const msg = err.response?.data?.error || "Failed to submit cancellation request";
+      const msg =
+        err.response?.data?.error || "Failed to submit cancellation request";
       setError(msg);
     } finally {
       setSubmitting(false);
@@ -42,19 +43,28 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content animated" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>×</button>
+      <div
+        className="modal-content animated"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="modal-close" onClick={onClose}>
+          ×
+        </button>
         <h3 className="modal-title">Cancel Order</h3>
         <p className="modal-subtitle">
           You are about to request cancellation of Order #{order.id}
         </p>
 
+        {/* Product image + info */}
         {firstItem && (
           <div className="item-summary">
             <img
               src={firstItem.product_image || "/placeholder.png"}
               alt={firstItem.product_name}
               className="item-img"
+              onError={(e) => {
+                e.currentTarget.src = "/placeholder.png";
+              }}
             />
             <div className="item-info">
               <div className="item-name">{firstItem.product_name}</div>
@@ -66,7 +76,12 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Reason for cancellation *</label>
-            <select name="reason_type" value={form.reason_type} onChange={handleChange} required>
+            <select
+              name="reason_type"
+              value={form.reason_type}
+              onChange={handleChange}
+              required
+            >
               <option value="">Select reason</option>
               <option value="NOT_REQUIRED">Not Required Now</option>
               <option value="CHEAPER_ELSEWHERE">Found Cheaper Elsewhere</option>
@@ -126,18 +141,34 @@ const CancelOrderModal = ({ order, onClose, onSuccess }) => {
           animation: slideUp 0.3s ease;
           box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
-        .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; }
+        .modal-close {
+          position: absolute; top: 12px; right: 16px; background: none;
+          border: none; font-size: 1.5rem; cursor: pointer; color: #666;
+        }
         .modal-title { margin: 0 0 0.3rem; font-size: 1.5rem; color: #0f172a; }
         .modal-subtitle { font-size: 0.85rem; color: #475569; margin-bottom: 1.5rem; }
-        .item-summary { display: flex; gap: 12px; background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 1.5rem; align-items: center; }
-        .item-img { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; }
+
+        /* Item summary with image */
+        .item-summary {
+          display: flex; gap: 12px; background: #f1f5f9; border-radius: 12px;
+          padding: 12px; margin-bottom: 1.5rem; align-items: center;
+        }
+        .item-img {
+          width: 60px; height: 60px; object-fit: contain; border-radius: 8px;
+          background: #e2e8f0; /* subtle background while loading */
+        }
         .item-name { font-weight: 700; color: #0f172a; }
-        .item-meta { font-size: 0.8rem; color: #64748b; }
+        .item-meta { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+
         .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem; }
+        .form-group label {
+          display: block; font-size: 0.85rem; font-weight: 600;
+          color: #334155; margin-bottom: 0.3rem;
+        }
         .form-group input, .form-group select, .form-group textarea {
-          width: 100%; padding: 0.7rem 1rem; border: 1px solid #cbd5e1; border-radius: 10px;
-          font-size: 0.9rem; color: #0f172a; background: #f8fafc; outline: none;
+          width: 100%; padding: 0.7rem 1rem; border: 1px solid #cbd5e1;
+          border-radius: 10px; font-size: 0.9rem; color: #0f172a;
+          background: #f8fafc; outline: none;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
           border-color: #f97316; box-shadow: 0 0 0 2px rgba(249,115,22,0.2);
