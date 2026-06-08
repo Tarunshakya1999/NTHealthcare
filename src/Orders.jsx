@@ -7,7 +7,7 @@ import CancelOrderModal from "./CancelOrderModal";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [cancelOrderId, setCancelOrderId] = useState(null);   // store order object for modal
+  const [cancelOrderId, setCancelOrderId] = useState(null);
   const token = localStorage.getItem("access_token");
 
   const fetchOrders = async () => {
@@ -23,15 +23,34 @@ const Orders = () => {
     }
   };
 
-  useEffect(() => { fetchOrders(); }, []);
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const handleCancelSuccess = () => {
     setCancelOrderId(null);
     fetchOrders();
   };
 
-  const handleReturn = async (orderId) => {
-    // ... same as before
+  // ✅ WhatsApp return handler
+  const handleReturn = (order) => {
+    // Build the message
+    let message = `*RETURN REQUEST* 🚚\n`;
+    message += `Order ID: #${order.id}\n`;
+    message += `Order Date: ${new Date(order.created_at).toLocaleDateString()}\n\n`;
+    message += `*Products to Return:*\n`;
+    order.items.forEach((item) => {
+      const itemTotal = item.product_price * item.quantity;
+      message += `➤ ${item.product_name}\n   Quantity: ${item.quantity} × ₹${item.product_price} = ₹${itemTotal}\n`;
+    });
+    message += `\n*Total Amount:* ₹${order.total_amount}\n`;
+    message += `\n*Reason for return:* \n`;  // user can type after this
+    message += `\n⚠️ *Note:* Return is accepted only within 7 days of delivery.`;
+
+    // WhatsApp link with pre-filled message
+    const whatsappNumber = "917011617976"; // 7011617976 with India country code
+    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
   };
 
   const statusColors = {
@@ -43,7 +62,7 @@ const Orders = () => {
     CANCELLED: "danger",
     RETURN_REQUESTED: "warning",
     RETURNED: "dark",
-    CANCELLATION_REQUESTED: "warning",   // orange-like
+    CANCELLATION_REQUESTED: "warning",
   };
 
   return (
@@ -52,6 +71,12 @@ const Orders = () => {
       <div style={{ minHeight: "100vh", background: "#f8fafc", padding: "2rem" }}>
         <div className="container">
           <h2 className="mb-4">My Orders</h2>
+
+          {/* ✅ 7‑day return policy notice */}
+          <div className="alert alert-info mb-4" role="alert">
+            📦 <strong>Return Policy:</strong> Orders can be returned only within <strong>7 days</strong> of delivery. After that, returns are not accepted.
+          </div>
+
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : orders.length === 0 ? (
@@ -73,7 +98,12 @@ const Orders = () => {
                       </div>
                       <div className="text-end">
                         {order.status === "DELIVERED" && (
-                          <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleReturn(order.id)}>Return</button>
+                          <button
+                            className="btn btn-sm btn-outline-warning me-2"
+                            onClick={() => handleReturn(order)}  // ✅ pass whole order
+                          >
+                            Return
+                          </button>
                         )}
                         {["PENDING", "VERIFIED", "PROCESSING"].includes(order.status) && (
                           <button
@@ -105,7 +135,7 @@ const Orders = () => {
         </div>
       </div>
 
-      {/* Cancel Modal */}
+      {/* Cancel Modal (unchanged) */}
       {cancelOrderId && (
         <CancelOrderModal
           order={orders.find(o => o.id === cancelOrderId)}
