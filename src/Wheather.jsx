@@ -59,7 +59,7 @@ const WeatherApp = () => {
           onChange={(e) => setCity(e.target.value)}
         />
         <button type="submit" className="btn btn-primary">
-          Show Weather
+          Show Weather 
         </button>
       </form>
 
