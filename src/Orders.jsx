@@ -32,113 +32,81 @@ const Orders = () => {
     fetchOrders();
   };
 
-  // ✅ WhatsApp return handler
-  const handleReturn = (order) => {
-    // Build the message
-    let message = `*RETURN REQUEST* 🚚\n`;
-    message += `Order ID: #${order.id}\n`;
-    message += `Order Date: ${new Date(order.created_at).toLocaleDateString()}\n\n`;
-    message += `*Products to Return:*\n`;
-    order.items.forEach((item) => {
-      const itemTotal = item.product_price * item.quantity;
-      message += `➤ ${item.product_name}\n   Quantity: ${item.quantity} × ₹${item.product_price} = ₹${itemTotal}\n`;
-    });
-    message += `\n*Total Amount:* ₹${order.total_amount}\n`;
-    message += `\n*Reason for return:* \n`;  // user can type after this
-    message += `\n⚠️ *Note:* Return is accepted only within 7 days of delivery.`;
-
-    // WhatsApp link with pre-filled message
-    const whatsappNumber = "917011617976"; // 7011617976 with India country code
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
-  };
-
-  const statusColors = {
-    PENDING: "secondary",
-    VERIFIED: "info",
-    PROCESSING: "warning",
-    SHIPPED: "primary",
-    DELIVERED: "success",
-    CANCELLED: "danger",
-    RETURN_REQUESTED: "warning",
-    RETURNED: "dark",
-    CANCELLATION_REQUESTED: "warning",
-  };
+  if (loading) {
+    return (
+      <>
+        <Nav />
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-lg font-semibold">Loading orders...</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Nav />
-      <div style={{ minHeight: "100vh", background: "#f8fafc", padding: "2rem" }}>
-        <div className="container">
-          <h2 className="mb-4">My Orders</h2>
+      <div className="max-w-4xl mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-6">My Orders</h1>
 
-          {/* ✅ 7‑day return policy notice */}
-          <div className="alert alert-info mb-4" role="alert">
-            📦 <strong>Return Policy:</strong> Orders can be returned only within <strong>7 days</strong> of delivery. After that, returns are not accepted.
-          </div>
-
-          {loading ? (
-            <div className="text-center">Loading...</div>
-          ) : orders.length === 0 ? (
-            <div className="text-center">
-              <p>No orders yet.</p>
-              <Link to="/" className="btn btn-primary">Shop Now</Link>
-            </div>
-          ) : (
-            <div className="row g-3">
-              {orders.map((order) => (
-                <div className="col-12" key={order.id}>
-                  <div className="card shadow-sm p-3 rounded-3">
-                    <div className="d-flex justify-content-between">
-                      <div>
-                        <h6>Order #{order.id}</h6>
-                        <span className={`badge bg-${statusColors[order.status] || "secondary"}`}>{order.status}</span>
-                        <p className="mt-1 mb-1">Total: ₹{order.total_amount}</p>
-                        <small>{new Date(order.created_at).toLocaleDateString()}</small>
-                      </div>
-                      <div className="text-end">
-                        {order.status === "DELIVERED" && (
-                          <button
-                            className="btn btn-sm btn-outline-warning me-2"
-                            onClick={() => handleReturn(order)}  // ✅ pass whole order
-                          >
-                            Return
-                          </button>
-                        )}
-                        {["PENDING", "VERIFIED", "PROCESSING"].includes(order.status) && (
-                          <button
-                            className="btn btn-sm btn-outline-danger me-2"
-                            onClick={() => setCancelOrderId(order.id)}
-                          >
-                            Cancel
-                          </button>
-                        )}
-                        {order.status === "CANCELLATION_REQUESTED" && (
-                          <span className="badge bg-warning text-dark">Cancellation Pending</span>
-                        )}
-                        <Link to="/" className="btn btn-sm btn-outline-primary">Shop More</Link>
-                      </div>
-                    </div>
-                    <div className="mt-2">
-                      {order.items?.map((item) => (
-                        <div key={item.id} className="d-flex justify-content-between small">
-                          <span>{item.product_name} x {item.quantity}</span>
-                          <span>₹{item.product_price * item.quantity}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+        {orders.length === 0 ? (
+          <p className="text-center text-gray-500">No orders found.</p>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="border rounded-lg p-4 shadow-sm bg-white"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="font-semibold">Order #{order.id}</h2>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      order.status === "Cancelled"
+                        ? "bg-red-100 text-red-700"
+                        : order.status === "Delivered"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+
+                <p className="text-sm text-gray-600 mb-1">
+                  Date: {new Date(order.created_at).toLocaleDateString()}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Total: ₹{order.total_amount}
+                </p>
+
+                <div className="flex gap-3 mt-3">
+                  <Link
+                    to={`/order/${order.id}`}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  >
+                    View Details
+                  </Link>
+
+                  {order.status !== "Cancelled" &&
+                    order.status !== "Delivered" && (
+                      <button
+                        onClick={() => setCancelOrderId(order.id)}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        Cancel Order
+                      </button>
+                    )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Cancel Modal (unchanged) */}
       {cancelOrderId && (
         <CancelOrderModal
-          order={orders.find(o => o.id === cancelOrderId)}
+          orderId={cancelOrderId}
           onClose={() => setCancelOrderId(null)}
           onSuccess={handleCancelSuccess}
         />
