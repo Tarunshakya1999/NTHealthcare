@@ -97,14 +97,14 @@ const Orders = () => {
                         <small>{new Date(order.created_at).toLocaleDateString()}</small>
                       </div>
                       <div className="text-end">
-                        {order.status === "DELIVERED" && (
+                        {/* {order.status === "DELIVERED" && (
                           <button
                             className="btn btn-sm btn-outline-warning me-2"
                             onClick={() => handleReturn(order)}  // ✅ pass whole order
                           >
                             Return
                           </button>
-                        )}
+                        )} */}
                         {["PENDING", "VERIFIED", "PROCESSING"].includes(order.status) && (
                           <button
                             className="btn btn-sm btn-outline-danger me-2"
