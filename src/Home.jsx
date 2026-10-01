@@ -108,14 +108,14 @@ export default function Home() {
     const lines = [
       `🛍️ *${item.name}*`,
       "",
-      item.description ? `📝 ${item.description}` : "",
+      item.description ? `${item.description}` : "",
       "",
       isOnSale
-        ? `💰 Price: ₹${item.discounted_price}  (MRP ₹${item.price}) — ${percent}% OFF 🔥`
-        : `💰 Price: ₹${item.price}`,
+        ? `Price: ₹${item.discounted_price}  (MRP ₹${item.price}) — ${percent}% OFF`
+        : `Price: ₹${item.price}`,
       "",
-      item.image ? `🖼️ Image: ${item.image}` : "",
-      `👉 View Product: ${getProductUrl(item)}`,
+      // item.image ? `Image: ${item.image}` : "",
+      `View Product: ${getProductUrl(item)}`,
       "",
       "— NT Healthcare | India's Trusted Healthcare Store",
     ];
