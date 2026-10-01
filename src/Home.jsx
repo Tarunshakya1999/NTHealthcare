@@ -111,7 +111,7 @@ export default function Home() {
       item.description ? `${item.description}` : "",
       "",
       isOnSale
-        ? `Discounted Price: ₹${item.discounted_price}  (Actual Price ₹${item.price}) — ${percent}% OFF`
+        ? `Discounted Price: ₹${item.discounted_price}  (Price ₹${item.price}) — ${percent}% OFF`
         : `Price: ₹${item.price}`,
       "",
       // item.image ? `Image: ${item.image}` : "",
