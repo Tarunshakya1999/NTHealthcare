@@ -373,10 +373,10 @@ export default function ProductDetail() {
 
             <div className="pd-feature-grid">
               {[
-                ["🔬", "GMP Certified"],
+                // ["🔬", "GMP Certified"],
                 ["🌡️", "Store Below 25°C"],
                 ["⏱️", "18 Months Expiry"],
-                ["🏭", "ISO 9001:2015"],
+                // ["🏭", "ISO 9001:2015"],
               ].map(([icon, label]) => (
                 <div className="pd-feature-item" key={label}>
                   <span>{icon}</span> {label}
@@ -416,7 +416,7 @@ export default function ProductDetail() {
         <div className="pd-info-strip">
           {[
             ["🚚", "Free Delivery", "Orders above ₹299. Same-day dispatch available"],
-            ["🔄", "Easy Returns", "7-day hassle-free return on eligible items"],
+            // ["🔄", "Easy Returns", "7-day hassle-free return on eligible items"],
             ["🛡️", "100% Genuine", "All medicines sourced directly from manufacturers"],
             ["💬", "24/7 Support", "Expert pharmacist helpline always available"],
           ].map(([icon, title, desc]) => (
